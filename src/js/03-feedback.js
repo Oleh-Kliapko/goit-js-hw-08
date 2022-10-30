@@ -1,7 +1,7 @@
 import throttle from 'lodash.throttle';
 
 const STORAGE_KEY = 'feedback-form-state';
-const formData = {};
+let formData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
 
 const refs = {
   formEl: document.querySelector('.feedback-form'),
@@ -17,10 +17,15 @@ refs.formEl.addEventListener('submit', onSubmitForm);
 /** functions */
 
 function onSubmitForm(evt) {
-  evt.preventDefault();
-  evt.currentTarget.reset();
-  console.log(JSON.parse(localStorage.getItem(STORAGE_KEY)));
-  localStorage.removeItem(STORAGE_KEY);
+  if (formData.email && formData.message) {
+    evt.preventDefault();
+    evt.currentTarget.reset();
+    console.log(JSON.parse(localStorage.getItem(STORAGE_KEY)));
+    localStorage.removeItem(STORAGE_KEY);
+    formData = {};
+  } else {
+    alert('Warning! Email or message must not be empty');
+  }
 }
 
 function onSaveInputData(evt) {
@@ -31,11 +36,11 @@ function onSaveInputData(evt) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
 }
 
-function getFormOutput(evt) {
+function getFormOutput() {
   const savedFormData = JSON.parse(localStorage.getItem(STORAGE_KEY));
 
   if (savedFormData) {
-    refs.emailEl.value = savedFormData.email;
-    refs.messageEl.value = savedFormData.message;
+    refs.emailEl.value = savedFormData.email || '';
+    refs.messageEl.value = savedFormData.message || '';
   }
 }
